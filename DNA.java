@@ -176,16 +176,16 @@ public class DNA {
 
             if (STR.equals(sequence.substring(i, i + STR.length()))) {
                 currentRepeats++;
+                i = i + STR.length() - 1;
                 if (currentRepeats > longestRepeats) {
-                    i = i + STR.length() - 1;
                     longestRepeats = currentRepeats;
                 }
+
             } else {
 
                 currentRepeats = 0;
             }
         }
-
         STR strObject = new STR(STR, longestRepeats);
 
         return strObject; // update the return value
@@ -321,60 +321,69 @@ public class DNA {
      *                other parent passed down
      * @return Returns the array of profiles that are related
      */
+
+    // s1_STR = The first list of STRs contained by the offspring that one parent
+    // passed down
+    // Only parent1 can pass down S1
+    // s2_STR = The second list of STRs contained by the offspring that the other
+    // parent passed down
+    // Only parent2 can pass down S2
+    // database[] contains parents STRs
+    // if the database[i] = s1_STR, then that means the database[i] is a possible
+    // parent1
+    // if the database[i] = s2_STR, then that means that database[i] is a possible
+    // parent2
+
     public ArrayList<Profile> findPossibleParents(STR[] S1_STRs, STR[] S2_STRs) {
-        // s1_STR = The first list of STRs contained by the offspring that one parent
-        // passed down
-        // Only parent1 can pass down S1
-        // s2_STR = The second list of STRs contained by the offspring that the other
-        // parent passed down
-        // Only parent2 can pass down S2
-        // database[] contains parents STRs
-        // if the database[i] = s1_STR, then that means the database[i] is a possible
-        // parent1
-        // if the database[i] = s2_STR, then that means that database[i] is a possible
-        // parent2
 
         /* FIX THIS METHOD */
 
         ArrayList<Profile> possibleParent1 = new ArrayList<>();
         ArrayList<Profile> possibleParent2 = new ArrayList<>();
-
         for (int i = 0; i < database.length; i++) {
-
+            // checking for possibleParent1
             if (identicalSTRs(database[i].getS1_STRs(), S1_STRs)) {
                 possibleParent1.add(database[i]);
             } else if (identicalSTRs(database[i].getS2_STRs(), S1_STRs)) {
                 possibleParent1.add(database[i]);
             }
+            // checking for possibleParent2
             if (identicalSTRs(database[i].getS1_STRs(), S2_STRs)) {
                 possibleParent2.add(database[i]);
             } else if (identicalSTRs(database[i].getS2_STRs(), S2_STRs)) {
                 possibleParent2.add(database[i]);
             }
         }
-
         ArrayList<Profile> parentList = new ArrayList<>();
-
         for (int p1 = 0; p1 < possibleParent1.size(); p1++) {
-
             for (int p2 = 0; p2 < possibleParent2.size(); p2++) {
-
+                // firstParent STR s1_STRs s2_STRs
+                // child STR from first parent S1_STRs
+                // secondParent STR s1_STRs s2_STRs
+                // child STR from second parent S2_STRs
+                // Parents1 1_STRs, S1_STRs, Parents2 1_STRs, S2_STRs
+                // Parents1 1_STRs, S1_STRs, Parents2 2_STRs, S2_STRs
+                // Parents1 2_STRs, S1_STRs, Parents2 1_STRs, S2_STRs
+                // Parents1 2_STRs, S1_STRs, Parents2 2_STRs, S2_STRs
                 if (!possibleParent1.get(p1).equals(possibleParent2.get(p2))) {
-
-                    if (punnetSquare(possibleParent2.get(p2).getS2_STRs(), S2_STRs,
-                            possibleParent1.get(p1).getS2_STRs(), S1_STRs)) {
+                    if (punnetSquare(
+                            possibleParent1.get(p1).getS1_STRs(), S1_STRs,
+                            possibleParent2.get(p2).getS1_STRs(), S2_STRs)) {
                         parentList.add(possibleParent1.get(p1));
                         parentList.add(possibleParent2.get(p2));
-                    } else if (punnetSquare(possibleParent2.get(p2).getS1_STRs(), S1_STRs,
-                            possibleParent1.get(p1).getS1_STRs(), S1_STRs)) {
+                    } else if (punnetSquare(
+                            possibleParent1.get(p1).getS1_STRs(), S1_STRs,
+                            possibleParent2.get(p2).getS2_STRs(), S2_STRs)) {
                         parentList.add(possibleParent1.get(p1));
                         parentList.add(possibleParent2.get(p2));
-                    } else if (punnetSquare(possibleParent2.get(p2).getS2_STRs(), S2_STRs,
-                            possibleParent1.get(p1).getS2_STRs(), S2_STRs)) {
+                    } else if (punnetSquare(
+                            possibleParent1.get(p1).getS2_STRs(), S1_STRs,
+                            possibleParent2.get(p2).getS1_STRs(), S2_STRs)) {
                         parentList.add(possibleParent1.get(p1));
                         parentList.add(possibleParent2.get(p2));
-                    } else if (punnetSquare(possibleParent2.get(p2).getS1_STRs(), S2_STRs,
-                            possibleParent1.get(p1).getS1_STRs(), S1_STRs)) {
+                    } else if (punnetSquare(
+                            possibleParent1.get(p1).getS2_STRs(), S1_STRs,
+                            possibleParent2.get(p2).getS2_STRs(), S2_STRs)) {
                         parentList.add(possibleParent1.get(p1));
                         parentList.add(possibleParent2.get(p2));
                     }
